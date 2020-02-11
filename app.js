@@ -15,12 +15,17 @@ app.use(bodyParser.json());
 // adding morgan to log HTTP requests
 app.use(morgan('combined'));
 // defining an endpoint to return all ads
-const ads = [
-    {title: 'Hello, world (again)!'}
-];
-/*app.get('/', (req, res) => {
-    res.send(ads);
-});*/
+
+const mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/test', {useNewUrlParser: true,useUnifiedTopology:true});
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+  console.log("Connected mongodb server successfully");
+});
+
+
+
 // Import routes
 let apiRoutes = require("./routes/api-routes")
 // Use Api routes in the App
