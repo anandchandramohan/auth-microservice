@@ -1,13 +1,59 @@
+const jwtAuth = require('../jwtauth/auth.js');
+const User = require('../model/user.js');
 var auth = {};
 
-auth.login =  async function (req, res) {
-    //authService.login();
-     res.json({"message": "logged in"});
-}
+auth.login = function (req, res, next) {
+      var body = req.body;
+      console.log(body);
+      var email = body.email;
+      var password = body.password;
+      User.findOne({email})
+        .exec()
+        .then((user) => {
+          if (user && user.verifyPassword(password)) {
+            const token = jwtAuth.signToken({
+              id: user.id,
+            });
+            res.json({
+              success: true,
+              item: user,
+              meta: {
+                token,
+              },
+            });
+          } else {
+            next();
+          }
+        })
+        .catch((error) => {
+          next(new Error(error));
+        });
+}   
 
-auth.register =  function (req, res) {
-    //authService.register();
-     res.json({"message": "registered"});
+auth.register =  function (req, res, next) {
+    var body = req.body;
+    console.log(body);
+    const user = new User(body);
+    console.log(user);
+          
+    user.save()
+    .then((created) => {
+      console.log("User created successfully");
+      const token = jwtAuth.signToken({
+        id: created.id,
+      });
+
+      res.json({
+        success: true,
+        item: created,
+        meta: {
+          token,
+        },
+      });
+    })
+    .catch((error) => {
+      next(new Error(error));
+    });
 }
 
 auth.resetPassword =  function (req, res) {

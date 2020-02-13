@@ -1,5 +1,5 @@
 var express = require('express');
-var json = require('body-parser');
+var bodyParser = require('body-parser');
 var cors = require('cors');
 var helmet = require('helmet');
 var morgan = require('morgan');
@@ -11,7 +11,10 @@ const app = express();
 // adding Helmet to enhance your API's security
 app.use(helmet());
 // using bodyParser to parse JSON bodies into JS objects
-app.use(json());
+app.use(bodyParser.urlencoded({
+    extended: true
+  }));
+app.use(bodyParser.json());
 // enabling CORS for all requests
 app.use(cors());
 // adding morgan to log HTTP requests
