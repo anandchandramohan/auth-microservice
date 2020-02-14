@@ -5,7 +5,9 @@ const config = {
 };
 
 const auth = (req, res, next) => {
+  console.log("Entered auth");
     const token = req.body.token || req.query.token || req.headers.authorization;
+    console.log("Token");
     console.log(token);
     if (token) {
       jwt.verify(token, config.secret, (err, decoded) => {
@@ -18,6 +20,8 @@ const auth = (req, res, next) => {
             message,
           });
         } else {
+          console.log("DECODING");
+          console.log(decoded);
           req.decoded = decoded;
           next();
         }
@@ -40,10 +44,10 @@ const auth = (req, res, next) => {
   
   const authFailed = (req, res, next) => {
     res.json({
-      success: false,
-      message: 'Email or password does not match',
+      success: auth
     });
-  };
+  }
+
   
   module.exports = {
     auth,

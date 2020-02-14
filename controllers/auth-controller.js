@@ -4,7 +4,6 @@ var auth = {};
 
 auth.login = function (req, res, next) {
       var body = req.body;
-      console.log(body);
       var email = body.email;
       var password = body.password;
       User.findOne({email})

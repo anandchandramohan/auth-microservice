@@ -3,8 +3,6 @@ const User = require('../model/user.js');
 var user = {};
 
 user.getUser = (req, res, next) => {
-  jwtAuth.auth(req,res,next);
-  console.log(req);
     var id = req.decoded.id;
     User.findById(id)
       .then((user) => {
