@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const bcrypt = require('bcrypt-nodejs');
+const bcrypt = require('bcryptjs');
 const db = require("../db/connection.js");
 const connection = db.getMongooseConnection();
 var fields = {
