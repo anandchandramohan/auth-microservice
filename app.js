@@ -7,7 +7,6 @@ var apiRouter = require('./routes/api-routes');
 var logger = require('winston');
 const jwtAuth = require('./jwtauth/auth.js');
 
-
 // defining the Express app
 const app = express();
 // adding Helmet to enhance your API's security
@@ -34,12 +33,13 @@ app.use((err, req, res, next) => {
   const {
     message,
   } = err;
-
   // Validation Errors
   if (err.message.startsWith('ValidationError')) {
     statusCode = 422;
   }
-  console.log('Middleware functions');
+  if(err.name.startsWith('Unauthorized')) {
+    statusCode = 401;
+  }
   logger.error(`Error: ${message}`);
   res.status(statusCode);
   res.json({

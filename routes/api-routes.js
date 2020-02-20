@@ -9,7 +9,7 @@ router.post('/login', auth.login);
 router.get('/logout', auth.logout);
 router.post('/register', auth.register);
 router.get('/password/reset', auth.resetPassword);
-router.get('/password/change', auth.changePassword);
+router.post('/password/change',jwtAuth.auth, auth.changePassword);
 router.get('/user', jwtAuth.auth, user.getUser);
 
 module.exports = router;

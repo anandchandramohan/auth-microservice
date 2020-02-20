@@ -3,17 +3,23 @@ const bcrypt = require('bcryptjs');
 const db = require("../db/connection.js");
 const connection = db.getMongooseConnection();
 var fields = {
-    firstName: {
+     firstName: {
         type: String,
-        required: false
+        required: true
       },
      lastName: {
         type: String,
-        required: false
+        required: true
       },
-     email: {
+     userName: {
         type: String,
-        required: false
+        require: true,
+        unique: true
+     },
+     primaryEmail: {
+        type: String,
+        required: true,
+        unique: true
       },
       password: {
         type: String,

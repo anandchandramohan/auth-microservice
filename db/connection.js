@@ -3,12 +3,10 @@ var connection = {};
 
 connection.getMongooseConnection = function(){
 
-   /* const promise = mongoose.connect('mongodb://localhost/authstore', {
-      useMongoClient: true
-    });*/
     const db = mongoose.createConnection('mongodb://localhost:27017/authstore',{
         useNewUrlParser: true,
-        useUnifiedTopology: true
+        useUnifiedTopology: true,
+        useCreateIndex: true
     });
 
     //const db = mongoose.connection;
