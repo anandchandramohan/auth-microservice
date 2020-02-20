@@ -9,8 +9,6 @@ connection.getMongooseConnection = function(){
         useCreateIndex: true
     });
 
-    //const db = mongoose.connection;
-
     db.on('error', ()=> {
         console.log('Failed to connect to mongoose')
     })

@@ -24,25 +24,26 @@ auth.login = function (req, res, next) {
       User.findOne(query)
         .exec()
         .then((user) => {
-          if (user && user.verifyPassword(password)) {
-            const token = jwtAuth.signToken({ 
-              id: user.id,
-            });
-            res.json({
-              success: true,
-              item: user,
-              meta: {
-                token,
-              },
-            });
-          } else {
-            var err = new Error();
-            err.name = "Unauthorized";
-            err.message = "Incorrect username or password.";
-            next(err);
+          var err = new Error();
+          err.name = "Unauthorized";
+          err.message = "Incorrect username or password.";
+          if(!user) {
+            return next(err);
+          } 
+          if(!user.verifyPassword(password)) {
+            return next(err);
           }
-        })
-        .catch((error) => {
+          const token = jwtAuth.signToken({ 
+            id: user.id,
+          });
+          res.json({
+            success: true,
+            item: user,
+            meta: {
+              token,
+            },
+          });
+        }).catch((error) => {
           next(new Error(error));
         });
   };  
@@ -69,9 +70,8 @@ auth.register =  function (req, res, next) {
     });
 };
 
-auth.resetPassword =  function (req, res) {
-    //authService.resetPassword();
-     res.json({"message": "password reset successfully"});
+auth.resetPassword =  function (req, res, next) {
+  
 };
 
 auth.changePassword =  function (req, res, next) {
@@ -85,7 +85,7 @@ auth.changePassword =  function (req, res, next) {
   User.findById(id)
       .then((user) => {
         if(!user.verifyPassword(oldPassword)) {
-          next(new Error("Old password isn't valid"));
+          return next(new Error("Old password isn't valid"));
         }
         user.password = newPassword;
         user.save()
@@ -99,6 +99,33 @@ auth.changePassword =  function (req, res, next) {
         })
       })
   }
+  auth.requestPasswordToken = function(req, res, next) {
+    var email = req.body.email;
+    if(!auth.isEmail(email)) {
+      return next(new Error("Ivalid email addresss."));
+    }
+    var query = {"primaryEmail": email};
+    User.findOne(query)
+        .exec()
+        .then((user) => {
+          if(!user) {
+            var err = new Error();
+              err.name = "Not Found";
+              err.message = "User is not exist";
+              return next(err);
+          }
+          user.generatePasswordReset();
+          user.save()
+          .then((updatedUser)=> {
+            res.json({
+              success: true,
+              item : "The token request has been done."
+            })
+          }).catch((error) => {
+             next(new Error(error));
+          })  
+    });
+  };
     
 auth.logout = function (req, res) {
     //authService.logout();

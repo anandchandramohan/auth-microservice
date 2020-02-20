@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const db = require("../db/connection.js");
 const connection = db.getMongooseConnection();
 var fields = {
@@ -23,6 +24,14 @@ var fields = {
       },
       password: {
         type: String,
+        required: false
+      },
+      resetPasswordToken: {
+        type: String,
+        required: false
+      },
+      resetPasswordExpires: {
+        type: Date,
         required: false
       }
 };
@@ -55,6 +64,10 @@ userSchema.methods.toJSON = function toJSON() {
 
   userSchema.methods.verifyPassword = function verifyPassword(password) {
     return bcrypt.compareSync(password, this.password);
+  };
+  userSchema.methods.generatePasswordReset = function() {
+    this.resetPasswordToken = crypto.randomBytes(20).toString('hex');
+    this.resetPasswordExpires = Date.now() + 3*3600000; //expires in 3 hous
   };
 
 module.exports = connection.model("user", userSchema);

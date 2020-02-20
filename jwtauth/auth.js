@@ -8,13 +8,11 @@ const auth = (req, res, next) => {
     var authCode = req.headers.authorization;
     var error = getUnauthorizedErrorMsg();
     if(authCode == null || authCode == undefined || authCode.length == 0) {
-       next(error);
-       return;
+       return next(error);
     } 
     var token = authCode.split(" ");
     if(token.length !== 2) {
-      next(error);
-      return;
+      return next(error);
     }
     var token = token[1];
     jwt.verify(token, config.secret, (err, decoded) => {

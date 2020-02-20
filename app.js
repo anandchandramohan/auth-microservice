@@ -40,6 +40,9 @@ app.use((err, req, res, next) => {
   if(err.name.startsWith('Unauthorized')) {
     statusCode = 401;
   }
+  if(err.name.startsWith('Not Found')) {
+    statusCode = 404;
+  }
   logger.error(`Error: ${message}`);
   res.status(statusCode);
   res.json({
