@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-const logger = require('winston');
 const config = {
     secret: "secret"
 };
@@ -30,15 +29,6 @@ const auth = (req, res, next) => {
     algorithm: 'HS256',
     expiresIn,
   });
-  
-
-  const getUnauthorizedErrorMsg = () => {
-    var err = new Error();
-    err.name = "Unauthorized";
-    err.message = "Unauthorized";
-    return err;
-  }
-
   
   module.exports = {
     auth,

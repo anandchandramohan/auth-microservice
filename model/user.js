@@ -66,7 +66,9 @@ userSchema.methods.toJSON = function toJSON() {
     return bcrypt.compareSync(password, this.password);
   };
   userSchema.methods.generatePasswordReset = function() {
-    this.resetPasswordToken = crypto.randomBytes(20).toString('hex');
+    console.log("Reset password token");
+    console.log(crypto.createHash('sha256').digest('hex'));
+    this.resetPasswordToken = crypto.createHash('sha256').digest('hex');
     this.resetPasswordExpires = Date.now() + 3*3600000; //expires in 3 hous
   };
 
