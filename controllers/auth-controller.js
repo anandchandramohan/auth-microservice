@@ -13,13 +13,15 @@ auth.login = function (req, res, next) {
       var userName = body.userName;
       var password = body.password;
       var query = {};
+      if(userName == null || userName.length == undefined || userName.length == 0 
+         || password == null || password == undefined || password.length == 0) {
+          return next(new Error("Invalid username/password"));
+      }
       if(auth.isEmail(userName)) {
         query.primaryEmail = userName;
       } else {
         query.userName = userName;
       }
-      
-      var primaryEmail = body.primaryEmail;
       var password = body.password;
       User.findOne(query)
         .exec()
@@ -71,7 +73,35 @@ auth.register =  function (req, res, next) {
 };
 
 auth.resetPassword =  function (req, res, next) {
-  
+  var token = req.body.token;
+  var password = req.body.password;
+  if(token == null || token == undefined || token.length == 0 
+    || password == null || password == undefined || password.length == 0) {
+      return next(new Error("Invalid reset token/new password"));
+  }
+  var query = {resetPasswordToken: token, resetPasswordExpires: {$gt: Date.now()}};
+  User.findOne(query)
+        .exec()
+        .then((user) => {
+          if (!user) {
+            var err = new Error();
+            err.name = "Unauthorized";
+            err.message = "Password reset token is invalid or has expired.";
+            return next(err);
+          }
+          user.password = password;
+          user.resetPasswordToken = undefined;
+          user.resetPasswordExpires = undefined;
+          user.save()
+          .then((updatedUser)=> {
+            res.json({
+              success: true,
+              item : "Password changed successfully"
+            })
+          })
+        }).catch((error) => {
+          next(new Error(error));
+        });
 };
 
 auth.changePassword =  function (req, res, next) {
@@ -80,7 +110,7 @@ auth.changePassword =  function (req, res, next) {
   var oldPassword = req.body.oldPassword;
   if(newPassword == null || newPassword == undefined || newPassword.length == 0 
     || oldPassword == null || oldPassword == undefined || oldPassword.length == 0) {
-      next(new Error("Invalid new passsword/ old password"));
+      return next(new Error("Invalid new passsword/ old password"));
   }
   User.findById(id)
       .then((user) => {
@@ -123,9 +153,9 @@ auth.changePassword =  function (req, res, next) {
             })
           }).catch((error) => {
              next(new Error(error));
-          })  
-    });
-  };
+          })
+        });  
+      };
     
 auth.logout = function (req, res) {
     //authService.logout();

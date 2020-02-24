@@ -44,7 +44,7 @@ const userSchema = mongoose.Schema(fields, {
         virtuals: true,
     },
 });
-const blacklistFields = ['password'];
+const blacklistFields = ['password', 'resetPasswordToken', 'resetPasswordExpires'];
 userSchema.methods.toJSON = function toJSON() {
     const doc = this.toObject();
     blacklistFields.forEach((field) => {
